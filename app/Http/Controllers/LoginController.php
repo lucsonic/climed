@@ -38,16 +38,18 @@ class LoginController extends Controller
                     'token_type' => 'bearer',
                     'expires_in' => Auth::factory()->getTTL() * 60,
                     'usuario' => new InfoUsuarioResource(Usuario::find($usuario->{Usuario::COD_USUARIO})),
-                    'ultimo_acesso' => count($dadosAuditoria) > 0 ? date('d/m/Y H:i:s', strtotime($dadosAuditoria[0]->dat_cadastro)) : 'Sem histórico'
+                    'ultimo_acesso' => count($dadosAuditoria) > 0 ? date('d/m/Y H:i:s', strtotime($dadosAuditoria[0]->dat_cadastro)) : 'Sem histórico',
+                    'nome_empresa' => 'Clínica Bonifácio',
+                    'modulo' => 'default'
                 ]);
             } 
             
             if (!password_verify($request->dsc_senha, $usuario->dsc_senha)) {
-                return response()->json(['error' => 'senha incorreta!'], 401);
+                return response()->json(['error' => 'Senha incorreta!'], 401);
             }
         }
 
-        return response()->json(['error' => 'usuário não encontrado'], 404);
+        return response()->json(['error' => 'Usuário não encontrado'], 404);
     }
 
     public function me()

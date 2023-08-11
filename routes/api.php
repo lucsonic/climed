@@ -8,6 +8,7 @@ use App\Http\Controllers\FuncionarioController;
 use App\Http\Controllers\LoginController;
 use App\Http\Controllers\PerfilController;
 use App\Http\Controllers\PermissaoController;
+use App\Http\Controllers\SelectBoxController;
 use App\Http\Controllers\UsuarioController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -52,9 +53,10 @@ Route::group(['middleware' => ['jwt']], function () {
         Route::get('/listar', [UsuarioController::class, 'listarUsuarios']);
         Route::post('/cadastrar', [UsuarioController::class, 'cadastrarUsuario']);
         Route::put('/{codUsuario}/exlcuir', [UsuarioController::class, 'excluirUsuario']);
-        Route::post('/{codUsuario}/alterar', [UsuarioController::class, 'alterarUsuario']);
+        Route::post('/alterar', [UsuarioController::class, 'alterarUsuario']);
         Route::put('/{codUsuario}/inativar', [UsuarioController::class, 'inativarUsuario']);
         Route::put('/{codUsuario}/ativar', [UsuarioController::class, 'ativarUsuario']);
+        Route::get('/editar/{id}', [UsuarioController::class, 'editarUsuario']);
     });
 
     Route::prefix('permissao')->group(function () {
@@ -107,5 +109,9 @@ Route::group(['middleware' => ['jwt']], function () {
         Route::post('/{codFuncionario}/alterar', [FuncionarioController::class, 'alterarFuncionario']);
         Route::put('/{codFuncionario}/inativar', [FuncionarioController::class, 'inativarFuncionario']);
         Route::put('/{codFuncionario}/ativar', [FuncionarioController::class, 'ativarFuncionario']);
+    });
+
+    Route::prefix('listar')->group(function () {
+        Route::get('/perfis', [SelectBoxController::class, 'listarPerfis']);
     });
 });

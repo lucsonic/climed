@@ -21,10 +21,7 @@ class InfoUsuarioResource extends JsonResource
             'nom_usuario' => $this->{Usuario::NOM_USUARIO},
             'flg_ativo' => $this->{Usuario::FLG_ATIVO},
             'dsc_email' => $this->{Usuario::DSC_EMAIL},
-            'cod_perfil' => $this->{Usuario::COD_PERFIL},
-            'perfil' => [
-                Perfil::NOM_PERFIL => is_null($this->perfil->first()->{Perfil::NOM_PERFIL}) ? null : $this->perfil->first()->{Perfil::NOM_PERFIL}
-            ]
+            'perfil' => Perfil::where(Perfil::COD_PERFIL, $this->{Usuario::COD_PERFIL})->get()
         )
         );
     }

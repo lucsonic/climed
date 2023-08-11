@@ -29,9 +29,9 @@ class UsuarioService
         return $this->usuarioRepository->excluirUsuario($codUsuario);
     }
 
-    public function alterarUsuario($codUsuario, Request $request)
+    public function alterarUsuario(Request $request)
     {
-        return $this->usuarioRepository->alterarUsuario($codUsuario, $request);
+        return $this->usuarioRepository->alterarUsuario($request);
     }
 
     public function ativarUsuario($codUsuario)
@@ -42,5 +42,10 @@ class UsuarioService
     public function inativarUsuario($codUsuario)
     {
         return $this->usuarioRepository->inativarUsuario($codUsuario);
+    }
+
+    public function editarUsuario($id)
+    {
+        return $this->usuarioRepository->editarUsuario($id);
     }
 }

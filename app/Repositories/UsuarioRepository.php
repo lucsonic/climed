@@ -22,7 +22,7 @@ class UsuarioRepository extends BaseRepository
     public function listarUsuarios(Request $request)
     {
         $consulta = $this->usuariolModel->query();
-        $consulta->select(Usuario::TABLE . '.' . '*', Perfil::TABLE . '.' . '*');
+        $consulta->select(Usuario::TABLE . '.' . '*', Perfil::TABLE . '.' . Perfil::NOM_PERFIL);
         $consulta->leftJoin(Perfil::TABLE, Perfil::TABLE . '.' . Perfil::COD_PERFIL, '=', Usuario::TABLE . '.' . Usuario::COD_PERFIL);
 
         if ($request->filled('busca')) {
@@ -31,7 +31,13 @@ class UsuarioRepository extends BaseRepository
                 $query->whereRaw(self::LOWER . '(' . Usuario::TABLE . '.' . Usuario::NOM_USUARIO . ') ' . self::LIKE . ' ? ', array($busca));
                 $query->orWhereRaw(self::LOWER . '(' . Usuario::TABLE . '.' . Usuario::SIG_USUARIO . ') ' . self::LIKE . ' ? ', array($busca));
                 $query->orWhereRaw(self::LOWER . '(' . Usuario::TABLE . '.' . Usuario::DSC_EMAIL . ') ' . self::LIKE . ' ? ', array($busca));
+                $query->orWhereRaw(self::LOWER . '(' . Usuario::TABLE . '.' . Usuario::CPF_USUARIO . ') ' . self::LIKE . ' ? ', array($busca));
+                $query->orWhereRaw(self::LOWER . '(' . Perfil::TABLE . '.' . Perfil::NOM_PERFIL . ') ' . self::LIKE . ' ? ', array($busca));
             });
+        }
+
+        if ($request->filled('flg_ativo')) {
+            $consulta->where(Usuario::TABLE . '.' . Usuario::FLG_ATIVO, '=', $request->get('flg_ativo'));
         }
 
         $consulta->orderBy(Usuario::TABLE . '.' . Usuario::NOM_USUARIO, 'ASC');
@@ -43,7 +49,7 @@ class UsuarioRepository extends BaseRepository
     {
         $existe = '';
         $usuario_email = Usuario::where(Usuario::DSC_EMAIL, '=', $request->dsc_email)->first();
-        $usuario_cpf = Usuario::where(Usuario::CPF_USUARIO, '=', $request->cpf_usuario)->first();
+        $usuario_cpf = Usuario::where(Usuario::CPF_USUARIO, '=', removeMascara($request->cpf_usuario))->first();
 
         if ($usuario_email) {
             $existe = [
@@ -104,9 +110,9 @@ class UsuarioRepository extends BaseRepository
         }
     }
 
-    public function alterarUsuario($codUsuario, Request $request)
+    public function alterarUsuario(Request $request)
     {
-        $usuario = Usuario::find($codUsuario);
+        $usuario = Usuario::find($request->cod_usuario);
 
         try {
             DB::beginTransaction();
@@ -114,11 +120,10 @@ class UsuarioRepository extends BaseRepository
             $usuario->update([
                 Usuario::NOM_USUARIO => $request->nom_usuario,
                 Usuario::SIG_USUARIO => $request->sig_usuario,
-                Usuario::DSC_SENHA => password_hash($request->dsc_senha, PASSWORD_DEFAULT),
                 Usuario::DSC_EMAIL => $request->dsc_email,
                 Usuario::FLG_ATIVO => $request->flg_ativo,
                 Usuario::COD_PERFIL => $request->cod_perfil,
-                Usuario::CPF_USUARIO => $request->cpf_usuario
+                Usuario::CPF_USUARIO => removeMascara($request->cpf_usuario)
             ]);
 
             Auditoria::adicionar('Alteração de Usuário', $this->currentUser->cod_usuario, 'O usuário ' . $this->currentUser->nom_usuario . ' alterou o usuário ' . $usuario->nom_usuario);
@@ -168,5 +173,10 @@ class UsuarioRepository extends BaseRepository
             DB::rollBack();
             return ErrorResponse($e);
         }
+    }
+
+    public function editarUsuario($id)
+    {
+        return Usuario::find($id);
     }
 }

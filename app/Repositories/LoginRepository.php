@@ -9,6 +9,6 @@ class LoginRepository extends BaseRepository
 {
     public function login(Request $request)
     {
-        return Usuario::where(Usuario::DSC_EMAIL, '=', $request->dsc_email)->where(Usuario::FLG_ATIVO, '=', Usuario::USUARIO_ATIVO)->first();
+        return Usuario::where(Usuario::DSC_EMAIL, '=', $request->dsc_email)->first();
     }
 }

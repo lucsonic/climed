@@ -30,9 +30,9 @@ class UsuarioController extends Controller
         return $this->usuarioService->excluirUsuario($codUsuario);
     }
 
-    public function alterarUsuario($codUsuario, Request $request)
+    public function alterarUsuario(Request $request)
     {
-        return $this->usuarioService->alterarUsuario($codUsuario, $request);
+        return $this->usuarioService->alterarUsuario($request);
     }
 
     public function ativarUsuario($codUsuario)
@@ -43,6 +43,11 @@ class UsuarioController extends Controller
     public function inativarUsuario($codUsuario)
     {
         return $this->usuarioService->inativarUsuario($codUsuario);
+    }
+
+    public function editarUsuario($id)
+    {
+        return $this->usuarioService->editarUsuario($id);
     }
 
     protected function makeResource($query)

@@ -28,7 +28,7 @@ class LoginController extends Controller
         $usuario = $this->loginService->login($request);
 
         if ($usuario) {
-            if (password_verify($request->dsc_senha, $usuario->dsc_senha)) {
+            if (password_verify($request->dsc_senha, $usuario->dsc_senha) && $usuario->flg_ativo === '1') {
                 $userToken = JWTAuth::fromUser($usuario);
                 $dadosAuditoria = $this->getLastAccess($usuario->{Usuario::COD_USUARIO});
                 Auditoria::adicionar('Login', $usuario->{Usuario::COD_USUARIO}, 'O usuário ' . $request->dsc_email . ' entrou no sistema.');
@@ -46,6 +46,10 @@ class LoginController extends Controller
             
             if (!password_verify($request->dsc_senha, $usuario->dsc_senha)) {
                 return response()->json(['error' => 'Senha incorreta!'], 401);
+            }
+
+            if ($usuario->flg_ativo === '0') {
+                return response()->json(['error' => 'Usuário desativado!'], 401);
             }
         }
 
